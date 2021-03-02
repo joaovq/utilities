@@ -8,7 +8,7 @@ afterEach(function() {
   sinon.restore()
 })
 
-describe('Utilities - Object Manager', function() {
+describe('Object', function() {
   const dateUtilities = new DateUtilitiesImpl()
   const objectUtilities = new ObjectUtilitiesImpl(dateUtilities)
 

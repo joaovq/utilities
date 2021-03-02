@@ -4,7 +4,11 @@ import { FileUtilities } from '@/domain'
 
 export class FileUtilitiesImpl implements FileUtilities {
   get(path: string): string {
-    return fs.readFileSync(path, 'utf8')
+    return fs.readFileSync(this.transformPathToRootDir(path), 'utf8')
+  }
+
+  transformPathToRootDir(path: string): string {
+    return path.split('node_modules/')[0]
   }
 
   getJSON(path: string): any {
@@ -12,29 +16,29 @@ export class FileUtilitiesImpl implements FileUtilities {
     if (json) {
       return JSON.parse(json)
     } else {
-      throw new Error(`Nenhum arquivo encontrado no caminho ${path}`)
+      throw new Error(`No file was found at ${this.transformPathToRootDir(path)}`)
     }
   }
 
   getFilesFromDir(dir: string): string[] {
-    return fs.readdirSync(dir, null)
+    return fs.readdirSync(this.transformPathToRootDir(dir), null)
   }
 
   getReadStream(path: string): ReadStream {
-    return fs.createReadStream(path)
+    return fs.createReadStream(this.transformPathToRootDir(path))
   }
 
   create(path: string, data: string): void {
-    return fs.writeFileSync(path, data)
+    return fs.writeFileSync(this.transformPathToRootDir(path), data)
   }
 
   remove(path: string): void {
-    if (this.exists(path)) {
-      fs.unlinkSync(path)
+    if (this.exists(this.transformPathToRootDir(path))) {
+      fs.unlinkSync(this.transformPathToRootDir(path))
     }
   }
 
   exists(path: string): boolean {
-    return fs.existsSync(path)
+    return fs.existsSync(this.transformPathToRootDir(path))
   }
 }

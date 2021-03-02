@@ -2,13 +2,12 @@ import sinon from 'sinon'
 import fs from 'fs'
 
 import { FileUtilitiesImpl } from '@/data'
-import { ReadStream } from 'fs'
 
 afterEach(function() {
   sinon.restore()
 })
 
-describe('Utilities - File Manager', function() {
+describe('File', function() {
   const fileUtilities = new FileUtilitiesImpl()
 
   it('Should read file content', function() {
@@ -37,7 +36,7 @@ describe('Utilities - File Manager', function() {
   it('Should not found a JSON file', function() {
     sinon.stub(fileUtilities, 'get').withArgs('notFile').returns('')
 
-    expect(function() { fileUtilities.getJSON('notFile') }).toThrowError('Nenhum arquivo encontrado no caminho notFile')
+    expect(function() { fileUtilities.getJSON('notFile') }).toThrowError('No file was found at notFile')
   })
 
   it('Should find a file', function() {

@@ -8,8 +8,8 @@ afterEach(function() {
   sinon.restore()
 })
 
-describe('Utilities - Request Manager', function() {
-  const requestManager = new HttpRequestImpl('baseURL', 5000)
+describe('HTTP Request', function() {
+  const httpRequest = new HttpRequestImpl('baseURL', 5000)
   const postPutParms: PostPutParams = {
     url: 'baseURL',
     body: { nome: 'nome' },
@@ -32,9 +32,9 @@ describe('Utilities - Request Manager', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: stubParams.data }
 
-    sinon.stub(requestManager, 'send').withArgs(stubParams).returns(stubResponse.data)
+    sinon.stub(httpRequest, 'send').withArgs(stubParams).returns(stubResponse.data)
 
-    expect(await requestManager.post(postPutParms)).toEqual(stubResponse.data)
+    expect(await httpRequest.post(postPutParms)).toEqual(stubResponse.data)
   })
 
   it('Should put object', async function() {
@@ -46,9 +46,9 @@ describe('Utilities - Request Manager', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: stubParams.data }
 
-    sinon.stub(requestManager, 'send').withArgs(stubParams).returns(stubResponse.data)
+    sinon.stub(httpRequest, 'send').withArgs(stubParams).returns(stubResponse.data)
 
-    expect(await requestManager.put(postPutParms)).toEqual(stubResponse.data)
+    expect(await httpRequest.put(postPutParms)).toEqual(stubResponse.data)
   })
 
   it('Should get object', async function() {
@@ -65,9 +65,9 @@ describe('Utilities - Request Manager', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: { user: 'dev' } }
 
-    sinon.stub(requestManager, 'send').withArgs(stubGetParams).resolves({ user: 'dev' })
+    sinon.stub(httpRequest, 'send').withArgs(stubGetParams).resolves({ user: 'dev' })
 
-    expect(await requestManager.get(getParams)).toEqual(stubResponse.data)
+    expect(await httpRequest.get(getParams)).toEqual(stubResponse.data)
   })
 
   it('Should delete object', async function() {
@@ -82,13 +82,13 @@ describe('Utilities - Request Manager', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: 'Deletado com sucesso' }
 
-    sinon.stub(requestManager, 'send').withArgs(stubGetParams).resolves(stubResponse.data)
+    sinon.stub(httpRequest, 'send').withArgs(stubGetParams).resolves(stubResponse.data)
 
-    expect(await requestManager.delete(deleteParams)).toEqual(stubResponse.data)
+    expect(await httpRequest.delete(deleteParams)).toEqual(stubResponse.data)
   })
 
   it('Should get error message', function() {
-    expect(requestManager.getErrorMessage(error)).toEqual(error.message)
+    expect(httpRequest.getErrorMessage(error)).toEqual(error.message)
   })
 
   it('Should get error response data', function() {
@@ -103,6 +103,6 @@ describe('Utilities - Request Manager', function() {
       }
     }
 
-    expect(requestManager.getErrorMessage(errorResp)).toEqual(errorResp.response.data)
+    expect(httpRequest.getErrorMessage(errorResp)).toEqual(errorResp.response.data)
   })
 })
