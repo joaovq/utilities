@@ -2,42 +2,54 @@ import sinon from 'sinon'
 import fs from 'fs'
 
 import { FileUtilitiesImpl } from '@/data'
+import { ReadStream } from 'fs'
 
 afterEach(function() {
   sinon.restore()
 })
 
 describe('Utilities - File Manager', function() {
-  const fileManager = new FileUtilitiesImpl()
+  const fileUtilities = new FileUtilitiesImpl()
 
   it('Should read file content', function() {
     sinon.stub(fs, 'readFileSync').withArgs('path', 'utf8').returns('test jest sugest')
 
-    expect(fileManager.get('path')).toEqual('test jest sugest')
+    expect(fileUtilities.get('path')).toEqual('test jest sugest')
   })
 
   it('Should read a JSON file', function() {
-    sinon.stub(fileManager, 'get').withArgs('path').returns('{"nome": "teste"}')
+    sinon.stub(fileUtilities, 'get').withArgs('path').returns('{"nome": "teste"}')
 
-    expect(fileManager.getJSON('path')).toEqual({ nome: 'teste' })
+    expect(fileUtilities.getJSON('path')).toEqual({ nome: 'teste' })
+  })
+
+  it('Should get a read strem', function() {
+    // Arrange
+    sinon.stub(fs, 'createReadStream').withArgs('path').returns(undefined)
+
+    // Act
+    const receivedReadStrem = fileUtilities.getReadStream('path')
+    
+    // Assert
+    expect(receivedReadStrem).toEqual(undefined)
   })
 
   it('Should not found a JSON file', function() {
-    sinon.stub(fileManager, 'get').withArgs('notFile').returns('')
+    sinon.stub(fileUtilities, 'get').withArgs('notFile').returns('')
 
-    expect(function() { fileManager.getJSON('notFile') }).toThrowError('Nenhum arquivo encontrado no caminho notFile')
+    expect(function() { fileUtilities.getJSON('notFile') }).toThrowError('Nenhum arquivo encontrado no caminho notFile')
   })
 
   it('Should find a file', function() {
     sinon.stub(fs, 'existsSync').withArgs('path').returns(true)
 
-    expect(fileManager.exists('path')).toBe(true)
+    expect(fileUtilities.exists('path')).toBe(true)
   })
 
   it('Should not be able to find a file', function() {
     sinon.stub(fs, 'existsSync').withArgs('notPath').returns(false)
 
-    expect(fileManager.exists('notPath')).toBe(false)
+    expect(fileUtilities.exists('notPath')).toBe(false)
   })
 
   it('Should create a new file', function() {
@@ -45,7 +57,7 @@ describe('Utilities - File Manager', function() {
       return 'new file content'
     }).withArgs('path', 'new file content')
 
-    expect(fileManager.create('path', 'new file content')).toEqual('new file content')
+    expect(fileUtilities.create('path', 'new file content')).toEqual('new file content')
   })
 
   it('Should read files from directory', function() {
@@ -56,7 +68,7 @@ describe('Utilities - File Manager', function() {
 
     sinon.stub(fs, 'readdirSync').withArgs('path', null).returns(filesFromDir)
 
-    expect(fileManager.getFilesFromDir('path')).toEqual(filesFromDir)
+    expect(fileUtilities.getFilesFromDir('path')).toEqual(filesFromDir)
   })
 
   it('Should remove file from directory', function() {
@@ -64,6 +76,6 @@ describe('Utilities - File Manager', function() {
 
     sinon.stub(fs, 'unlinkSync').withArgs('path')
 
-    expect(fileManager.remove('path')).toBeUndefined()
+    expect(fileUtilities.remove('path')).toBeUndefined()
   })
 })

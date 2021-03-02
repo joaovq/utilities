@@ -7,7 +7,8 @@ module.exports = {
     'ts'
   ],
   coveragePathIgnorePatterns: [
-    '<rootDir>/node_modules/(?!@foo)'
+    '<rootDir>/node_modules/(?!@foo)',
+    '<rootDir>/src/data/logger.ts'
   ],
   globals: {
     'ts-jest': {
@@ -30,9 +31,9 @@ module.exports = {
   coverageThreshold: {
     global: {
       branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
+      functions: 100,
+      lines: 100,
+      statements: 100
     }
   }, 
   preset: 'ts-jest',

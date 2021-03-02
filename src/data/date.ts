@@ -12,10 +12,10 @@ export class DateUtilitiesImpl implements DateUtilities {
 
   getDate(date?: AcceptableDate): Date {
     dayjs.extend(customParseFormat)
-    const newData = dayjs(date, 'YYYY-MM-DD', true).isValid()
+    const newDate = dayjs(date, 'YYYY-MM-DD', true).isValid()
       ? dayjs(date).format('YYYY-MM-DD')
       : dayjs().format('YYYY-MM-DD')
-    return new Date(newData)
+    return new Date(newDate)
   }
 
   isValidDate(date: any): boolean {

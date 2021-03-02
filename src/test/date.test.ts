@@ -211,7 +211,7 @@ describe('Utilities - Date', function() {
     const date = new Date(2000, 1, 1)
     const dateReturn = '2000-02-01'
 
-    expect(dateManager.format(date, 'YYYY-MM-DD')).toEqual(dateReturn)
+    expect(dateManager.format(date)).toEqual(dateReturn)
   })
 
   it('Should apply DD/MM/YYYY format into date when i pass a type Date', function() {
@@ -240,5 +240,14 @@ describe('Utilities - Date', function() {
     const dateReturn = new Date('2000-02-01T00:00:00.000Z')
 
     expect(dateManager.getDate(date)).toEqual(dateReturn)
+  })
+
+  it('Should return current date in format YYYY-MM-DDThh:mm:ss', function() {
+    const expectedDate = new Date()
+
+    const receivedDate = dateManager.getDate(undefined)
+
+    expect(typeof receivedDate).toEqual('object')
+    expect(receivedDate.toISOString().split('T')[0]).toEqual(expectedDate.toISOString().split('T')[0])
   })
 })

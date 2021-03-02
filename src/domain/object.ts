@@ -5,5 +5,5 @@ export interface ObjectUtilities {
   isString: (object: any) => boolean
   cloneObject: <T = any>(object: T) => T
   setNumberPrecision: (number: number, precision?: number) => number
-  getRandomValueFromEnum: <T>(anEnum: T) => T[keyof T]
+  getRandomValueFromNumberedEnum: <T>(anEnum: T) => T[keyof T]
 }
