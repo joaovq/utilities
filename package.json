@@ -65,9 +65,6 @@
   "_moduleAliases": {
     "@": "dist"
   },
-  "jestSonar": {
-    "reportPath": "coverage",
-    "reportFile": "test-reporter.xml",
-    "indent": 4
-  }
+  "types": "dist/main/index.d.ts",
+  "main": "dist/main/index.d.ts"
 }
