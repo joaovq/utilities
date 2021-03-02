@@ -1,10 +1,10 @@
 {
-  "name": "utilities",
-  "version": "1.0.0",
+  "name": "commom-utilities",
+  "version": "1.0.1",
   "description": "This repository contains many utilities for string, date, object or file manipulation as well as a http client to make transparent requests using axios",
-  "author": "João Vitor Q Mattos",
+  "author": "João Vitor Quintão Mattos",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "homepage": "https://github.com/joaovq/utilities",
   "scripts": {
     "jest": "jest --detectOpenHandles --runTestsByPath --bail",
