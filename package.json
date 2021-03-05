@@ -1,6 +1,6 @@
 {
   "name": "commom-utilities",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "This repository contains many utilities for string, date, object or file manipulation as well as a http client to make transparent requests using axios",
   "author": "João Vitor Quintão Mattos",
   "license": "MIT",
