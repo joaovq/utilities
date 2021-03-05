@@ -6,3 +6,4 @@ src/infra/database/migrations
 src/infra/database/seeders
 src/config/env.ts
 src/test/
+src/**/*.validator.ts
