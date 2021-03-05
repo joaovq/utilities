@@ -1,14 +1,12 @@
 import sinon from 'sinon'
 
-import { DateUtilitiesImpl } from '@/data'
+import { dateUtilities } from '@/main'
 
 afterEach(function() {
   sinon.restore()
 })
 
 describe('Date', function() {
-  const dateUtilities = new DateUtilitiesImpl()
-
   it('Should return Date when i pass a type Date', function() {
     const date = new Date(2014, 1, 24)
     const dateReturn = new Date('2014-02-24T00:00:00.000Z')

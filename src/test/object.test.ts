@@ -2,16 +2,13 @@ import sinon from 'sinon'
 import lodash from 'lodash'
 import * as stringSimilarity from 'string-similarity'
 
-import { ObjectUtilitiesImpl, DateUtilitiesImpl } from '@/data'
+import { objectUtilities } from '@/main'
 
 afterEach(function() {
   sinon.restore()
 })
 
 describe('Object', function() {
-  const dateUtilities = new DateUtilitiesImpl()
-  const objectUtilities = new ObjectUtilitiesImpl(dateUtilities)
-
   it('Should certify object', function() {
     expect(objectUtilities.isObject({ nome: 'teste' })).toEqual(true)
   })

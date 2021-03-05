@@ -4,54 +4,72 @@ import { basename } from 'path'
 import {
   FileUtilities,
   UploadParams,
-  Credentials,
-  AWSUtilities
+  AWSAdapter
 } from '@/domain'
 
+export interface Credentials {
+  accessKeyId: string
+  secretAccessKey: string
+  bucketName: string
+  tempBucketName?: string
+}
 
-export class AWSUtilitiesImpl implements AWSUtilities {
+interface Params {
+  credentials: Credentials
+  fileUtilities: FileUtilities
+}
+
+export class AWSAdapterImpl implements AWSAdapter {
   private readonly fileUtilities: FileUtilities
   private readonly bucketName: string
   private readonly tempBucketName: string
   private readonly s3: AWS.S3
 
-  constructor(credentials: Credentials, fileUtilities: FileUtilities) {
+  constructor(params: Params) {
     this.s3 = new AWS.S3({
       credentials: {
-        accessKeyId: credentials.accessKeyId,
-        secretAccessKey: credentials.secretAccessKey
+        accessKeyId: params.credentials.accessKeyId,
+        secretAccessKey: params.credentials.secretAccessKey
       }
     })
-    this.fileUtilities = fileUtilities
-    this.bucketName = credentials.bucketName
-    this.tempBucketName = credentials.tempBucketName
+    this.fileUtilities = params.fileUtilities
+    this.bucketName = params.credentials.bucketName
+    this.tempBucketName = params.credentials.tempBucketName
   }
 
   async upload(params: UploadParams): Promise<string> {
-    const path = params.path
-    const fileName = params.fileName
+    return new Promise((resolve, reject) => {
+      const path = params.path
 
-    const bucket = params.tempFile ? this.tempBucketName : this.bucketName
+      const bucketName = this.getBucketName(params)
 
-    const awsParams = {
-      ACL: 'public-read',
-      Bucket: bucket,
-      Key: fileName || basename(path),
-      Body: this.fileUtilities.getReadStream(path)
-    }
-
-    this.s3.upload(awsParams, (error, data) => {
-      if (error) {
-        throw error
-      } else {
-        this.fileUtilities.remove(path)
-        return data.Location
+      const awsParams = {
+        ACL: 'public-read',
+        Bucket: bucketName,
+        Key: this.getFileName(params),
+        Body: this.fileUtilities.getReadStream(path)
       }
-    })
 
-    return `https://${bucket}.s3.amazonaws.com/${awsParams.Key}`
+      return this.s3.upload(awsParams, (error: Error, data: any) => {
+        if (error) {
+          return reject(new Error(`Erro ao fazer uploado do arquivo: ${error.message}`))
+        } else {
+          this.fileUtilities.remove(path)
+          return resolve(data.Location)
+        }
+      })
+    })
   }
 
+  getBucketName(params: UploadParams): string {
+    return params.tempFile ? this.tempBucketName : this.bucketName
+  }
+
+  getFileName(params: UploadParams): string {
+    return params.fileName || basename(params.path)
+  }
+
+  /* istanbul ignore next */
   async delete(fileName: string): Promise<string> {
     return new Promise((resolve) => {
       const params = {
@@ -59,11 +77,11 @@ export class AWSUtilitiesImpl implements AWSUtilities {
         Key: fileName
       }
 
-      this.s3.deleteObject(params, function(error) {
+      return this.s3.deleteObject(params, function(error) {
         if (error) {
           throw error
         } else {
-          return resolve('File removed successfully.')
+          return resolve('File removed successfully')
         }
       })
     })

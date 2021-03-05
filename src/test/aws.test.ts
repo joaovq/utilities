@@ -1,14 +1,12 @@
 import sinon from 'sinon'
 import { ReadStream } from 'fs'
-
-
 import AWS from 'aws-sdk'
-import { AWSUtilitiesImpl } from '@/data'
-import { fileUtilities } from '@/main'
-import { Credentials, UploadParams } from '@/domain'
 
-describe('Api AWS', function() {
+import { AWSAdapter } from '@/main'
+import { UploadParams } from '@/domain'
+import { FileUtilitiesImpl, Credentials } from '@/data'
 
+describe('AWS', function() {
   const credentials: Credentials = {
     accessKeyId: 'accessKeyId',
     secretAccessKey: 'secretAccessKey',
@@ -16,37 +14,74 @@ describe('Api AWS', function() {
     tempBucketName: 'tempBucketName'
   }
 
-  const awsUtitlities = new AWSUtilitiesImpl(credentials, fileUtilities)
+  const awsAdapter = AWSAdapter(credentials)
 
+  it('Should successfully upload file', async function() {
+    const data = {
+      Location: 'location'
+    }
 
-
-  it('Should upload on aws main bucket', async function() {
-    // Arrange
     const uploadParams: UploadParams = {
       path: 'path',
       fileName: 'fileName'
     }
 
     let readStream: ReadStream
-    sinon.stub(fileUtilities, 'getReadStream')
-      .withArgs('path')
+    sinon.stub(FileUtilitiesImpl.prototype, 'getReadStream')
+      .withArgs(uploadParams.path)
       .returns(readStream)
 
+    const removeFileSpy = jest.spyOn(FileUtilitiesImpl.prototype, 'remove')
+
+    const params = {
+      ACL: 'public-read',
+      Bucket: credentials.bucketName,
+      Key: uploadParams.fileName,
+      Body: readStream
+    }
+
     sinon.stub(AWS.S3.prototype, 'upload')
-      .withArgs({
-        ACL: 'public-read',
-        Bucket: credentials.bucketName,
-        Key: 'path',
-        Body: readStream
-      })
+      .withArgs(params)
+      .yields(null, data)
 
-    // Act
-    const pathReceived = await awsUtitlities.upload(uploadParams)
-
-    expect(pathReceived).toEqual(`https://${credentials.bucketName}.s3.amazonaws.com/fileName`)
+    expect(await awsAdapter.upload(uploadParams)).toEqual(data.Location)
+    expect(removeFileSpy).toHaveBeenCalledWith(uploadParams.path)
   })
 
-  it('Should upload on aws temp bucket', async function() {
+  it('Should thrown an error when trying to upload file', async function() {
+    const data = {
+      Location: 'location'
+    }
+
+    const uploadParams: UploadParams = {
+      path: 'path',
+      fileName: 'fileName'
+    }
+
+    let readStream: ReadStream
+    sinon.stub(FileUtilitiesImpl.prototype, 'getReadStream')
+      .withArgs(uploadParams.path)
+      .returns(readStream)
+
+    const params = {
+      ACL: 'public-read',
+      Bucket: credentials.bucketName,
+      Key: uploadParams.fileName,
+      Body: readStream
+    }
+
+    const error = new Error('Error')
+
+    sinon.stub(AWS.S3.prototype, 'upload')
+      .withArgs(params)
+      .yields(error, undefined)
+
+    expect(async () => await awsAdapter.upload(uploadParams))
+      .rejects
+      .toThrowError(`Erro ao fazer uploado do arquivo: ${error.message}`)
+  })
+
+  it('Should return bucket name', function() {
     // Arrange
     const uploadParams: UploadParams = {
       path: 'path',
@@ -54,38 +89,14 @@ describe('Api AWS', function() {
       tempFile: true
     }
 
-    let readStream: ReadStream
-    sinon.stub(fileUtilities, 'getReadStream')
-      .withArgs('path')
-      .returns(readStream)
-
-    sinon.stub(AWS.S3.prototype, 'upload')
-      .withArgs({
-        ACL: 'public-read',
-        Bucket: credentials.tempBucketName,
-        Key: 'path',
-        Body: readStream
-      })
-
     // Act
-    const pathReceived = await awsUtitlities.upload(uploadParams)
-
-    expect(pathReceived).toEqual(`https://${credentials.tempBucketName}.s3.amazonaws.com/fileName`)
+    // @ts-expect-error
+    const receivedBucketName: string = awsAdapter.getBucketName(uploadParams)
+    
+    // Assert
+    const expectedBucketName = credentials.tempBucketName
+    expect(receivedBucketName).toEqual(expectedBucketName)
   })
-
-  // it('Deveria remover um arquivo', async function() {
-
-  //   const params = {
-  //     Bucket: credentials.bucketName,
-  //     Key: 'fileName'
-  //   }
-
-  //   const deleteStub = sinon.stub(AWS.S3.prototype, 'deleteObject')
-
-  //   expect(deleteStub).toHaveBeenCalledWith(params)
-  //   expect(await awsUtitlities.delete('fileName')).toEqual('constantes.itemRemovidoComSucesso')
-  // })
-
 })
 
 afterEach(function() {

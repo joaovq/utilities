@@ -1,15 +1,15 @@
 import sinon from 'sinon'
 import { AxiosRequestConfig, AxiosError } from 'axios'
 
-import { HttpRequestImpl } from '@/data'
 import { PostPutParams, GetParams, DeleteParams } from '@/domain'
+import { HttpRequest } from '@/main'
 
 afterEach(function() {
   sinon.restore()
 })
 
 describe('HTTP Request', function() {
-  const httpRequest = new HttpRequestImpl('baseURL', 5000)
+  const httpRequest = HttpRequest('baseURL')
   const postPutParms: PostPutParams = {
     url: 'baseURL',
     body: { nome: 'nome' },
@@ -32,6 +32,7 @@ describe('HTTP Request', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: stubParams.data }
 
+    // @ts-expect-error
     sinon.stub(httpRequest, 'send').withArgs(stubParams).returns(stubResponse.data)
 
     expect(await httpRequest.post(postPutParms)).toEqual(stubResponse.data)
@@ -46,6 +47,7 @@ describe('HTTP Request', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: stubParams.data }
 
+    // @ts-expect-error
     sinon.stub(httpRequest, 'send').withArgs(stubParams).returns(stubResponse.data)
 
     expect(await httpRequest.put(postPutParms)).toEqual(stubResponse.data)
@@ -65,6 +67,7 @@ describe('HTTP Request', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: { user: 'dev' } }
 
+    // @ts-expect-error
     sinon.stub(httpRequest, 'send').withArgs(stubGetParams).resolves({ user: 'dev' })
 
     expect(await httpRequest.get(getParams)).toEqual(stubResponse.data)
@@ -82,12 +85,14 @@ describe('HTTP Request', function() {
     }
     const stubResponse = { status: 200, statusText: 'OK', data: 'Deletado com sucesso' }
 
+    // @ts-expect-error
     sinon.stub(httpRequest, 'send').withArgs(stubGetParams).resolves(stubResponse.data)
 
     expect(await httpRequest.delete(deleteParams)).toEqual(stubResponse.data)
   })
 
   it('Should get error message', function() {
+    // @ts-expect-error
     expect(httpRequest.getErrorMessage(error)).toEqual(error.message)
   })
 
@@ -103,6 +108,7 @@ describe('HTTP Request', function() {
       }
     }
 
+    // @ts-expect-error
     expect(httpRequest.getErrorMessage(errorResp)).toEqual(errorResp.response.data)
   })
 })

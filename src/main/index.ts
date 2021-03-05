@@ -1,7 +1,6 @@
 import {
   HttpRequest as IHttpRequest,
-  AWSUtilities as IAWSUtilities,
-  Credentials as AWSCredentials
+  AWSAdapter as IAWSUtilities,
 } from '@/domain'
 import {
   DateUtilitiesImpl,
@@ -9,7 +8,8 @@ import {
   StringUtilitiesImpl,
   FileUtilitiesImpl,
   HttpRequestImpl,
-  AWSUtilitiesImpl
+  AWSAdapterImpl,
+  Credentials as AWSCredentials
 } from '@/data'
 
 export const dateUtilities = new DateUtilitiesImpl()
@@ -18,4 +18,7 @@ export const stringUtilities = new StringUtilitiesImpl()
 export const fileUtilities = new FileUtilitiesImpl()
 
 export const HttpRequest = (url: string): IHttpRequest => new HttpRequestImpl(url)
-export const AWSUtilities = (credentials: AWSCredentials): IAWSUtilities => new AWSUtilitiesImpl(credentials, fileUtilities)
+export const AWSAdapter = (credentials: AWSCredentials): IAWSUtilities => new AWSAdapterImpl({
+  credentials,
+  fileUtilities
+})

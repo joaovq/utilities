@@ -1,15 +1,13 @@
 import sinon from 'sinon'
 import fs from 'fs'
 
-import { FileUtilitiesImpl } from '@/data'
+import { fileUtilities } from '@/main'
 
 afterEach(function() {
   sinon.restore()
 })
 
 describe('File', function() {
-  const fileUtilities = new FileUtilitiesImpl()
-
   it('Should read file content', function() {
     sinon.stub(fs, 'readFileSync').withArgs('path', 'utf8').returns('test jest sugest')
 
