@@ -56,8 +56,6 @@ export class InterfaceValidatorImpl implements InterfaceValidator {
     switch (type) {
       case 'number':
         return 'número'
-      case 'date':
-        return 'data'
       case 'object':
         return 'objeto'
       case 'array':

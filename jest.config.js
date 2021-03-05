@@ -8,7 +8,8 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/(?!@foo)',
-    '<rootDir>/src/data/logger.ts'
+    '<rootDir>/src/data/logger.ts',
+    '<rootDir>/src/test/validator/*'
   ],
   globals: {
     'ts-jest': {

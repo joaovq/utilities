@@ -164,8 +164,6 @@ describe('Validator', function() {
         object: {
           ...example,
           dateField: example.dateField.toISOString(),
-          stringField: 1,
-          numberField: 1,
           objectField: 1
         },
         interfaceName: 'Example'
@@ -180,8 +178,6 @@ describe('Validator', function() {
         object: {
           ...example,
           dateField: example.dateField.toISOString(),
-          stringField: 1,
-          numberField: 1,
           arrayField: 1
         },
         interfaceName: 'Example'
@@ -199,13 +195,7 @@ describe('Validator', function() {
       // Act
       expect(() => interfaceValidator.validate({
         validate: mockValidate,
-        object: {
-          ...example,
-          dateField: example.dateField.toISOString(),
-          stringField: 1,
-          numberField: 1,
-          arrayField: 1
-        },
+        object: example,
         interfaceName: 'Example'
       }))
         .toThrowError('Não conseguimos validar os dados de entrada por causa do seguinte erro: Error')
